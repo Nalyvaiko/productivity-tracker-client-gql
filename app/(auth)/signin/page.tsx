@@ -9,7 +9,7 @@ const SigninPage = () => {
   const [state, setState] = useState({ password: '', email: '' })
   const router = useRouter()
 
-  const handleSignin = async (e) => {
+  const handleSignin = async (e: any) => {
     e.preventDefault()
   }
 
