@@ -16,18 +16,31 @@ import {
 } from '@nextui-org/react'
 import { PlusIcon } from 'lucide-react'
 import { IssuesQuery } from '@/gql/issuesQuery'
+import { CreateIssueMutation } from '@/gql/createIssueMutation'
 
 import PageHeader from '../_components/PageHeader'
 import Issue from '../_components/Issue'
 
 const IssuesPage = () => {
-  // By default, the query fires immediately.
-  const [{ data, fetching, error }, replay] = useQuery({ query: IssuesQuery })
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [issueName, setIssueName] = useState('')
   const [issueDescription, setIssueDescription] = useState('')
+  // By default, the query fires immediately.
+  const [{ data, fetching, error }, replay] = useQuery({ query: IssuesQuery })
+  const [newIssueResult, createNewIssue] = useMutation(CreateIssueMutation)
 
-  const onCreate = async (close) => {}
+  const onCreate = async (close) => {
+    const result = await createNewIssue({
+      input: { name: issueName, content: issueDescription },
+    })
+
+    if (result.data) {
+      await replay()
+      close()
+      setIssueName('')
+      setIssueDescription('')
+    }
+  }
 
   return (
     <div>
