@@ -1,7 +1,6 @@
 'use client'
 
-import PageHeader from '../_components/PageHeader'
-import { useMutation, useQuery } from 'urql'
+import { useMutation, useQuery } from '@urql/next'
 import { useState } from 'react'
 import {
   Button,
@@ -16,9 +15,14 @@ import {
   useDisclosure,
 } from '@nextui-org/react'
 import { PlusIcon } from 'lucide-react'
+import { IssuesQuery } from '@/gql/issuesQuery'
+
+import PageHeader from '../_components/PageHeader'
 import Issue from '../_components/Issue'
 
 const IssuesPage = () => {
+  // By default, the query fires immediately.
+  const [{ data, fetching, error }, replay] = useQuery({ query: IssuesQuery })
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
   const [issueName, setIssueName] = useState('')
   const [issueDescription, setIssueDescription] = useState('')
@@ -38,11 +42,14 @@ const IssuesPage = () => {
         </Tooltip>
       </PageHeader>
 
-      {[].map((issue) => (
-        <div key={issue.id}>
-          <Issue issue={issue} />
-        </div>
-      ))}
+      {fetching && <Spinner />}
+      {error && <div>error</div>}
+      {data &&
+        data.issues.map((issue) => (
+          <div key={issue.id}>
+            <Issue issue={issue} />
+          </div>
+        ))}
 
       <Modal
         size="2xl"
